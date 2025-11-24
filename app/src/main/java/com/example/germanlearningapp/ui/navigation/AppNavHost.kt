@@ -11,6 +11,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.germanlearningapp.ui.screen.decks.DecksScreen
+import com.example.germanlearningapp.ui.screen.home.HomeScreen
+import com.example.germanlearningapp.ui.screen.study.StudyScreen
+import com.example.germanlearningapp.ui.screen.progress.ProgressScreen
+import com.example.germanlearningapp.ui.screen.pro.ProScreen
+import com.example.germanlearningapp.ui.screen.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(
@@ -55,36 +61,6 @@ fun AppNavHost(
             )
         }
     }
-}
-
-@Composable
-fun HomeScreen(navController: NavHostController) {
-    PlaceholderScreen(text = "Home Screen")
-}
-
-@Composable
-fun DecksScreen(navController: NavHostController) {
-    PlaceholderScreen(text = "Decks Screen")
-}
-
-@Composable
-fun ProgressScreen() {
-    PlaceholderScreen(text = "Progress Screen")
-}
-
-@Composable
-fun SettingsScreen(navController: NavHostController) {
-    PlaceholderScreen(text = "Settings Screen")
-}
-
-@Composable
-fun ProScreen(navController: NavHostController) {
-    PlaceholderScreen(text = "Pro Screen")
-}
-
-@Composable
-fun StudyScreen(deckId: Long, navController: NavHostController) {
-    PlaceholderScreen(text = "Study Screen (Deck: $deckId)")
 }
 
 @Composable

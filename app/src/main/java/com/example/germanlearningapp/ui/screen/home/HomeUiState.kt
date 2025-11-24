@@ -1,8 +1,9 @@
 package com.example.germanlearningapp.ui.screen.home
 
+import com.example.germanlearningapp.domain.model.Deck
+
 data class HomeUiState(
-    val dueCount: Int = 0,
-    val newCount: Int = 0,
-    val streak: Int = 0,
-    val isLoading: Boolean = true
+    val reviewsDue: Int = 0,
+    val newCardsAvailable: Int = 0,
+    val lastUsedDeck: Deck? = null
 )

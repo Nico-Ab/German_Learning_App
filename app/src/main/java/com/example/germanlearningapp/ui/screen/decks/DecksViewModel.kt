@@ -1,4 +1,4 @@
-package com.example.germanlearningapp.ui.screen.home
+package com.example.germanlearningapp.ui.screen.decks
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,32 +6,27 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.germanlearningapp.domain.usecase.CardRepository
 import com.example.germanlearningapp.domain.model.Deck
+import com.example.germanlearningapp.domain.usecase.CardRepository
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class DecksViewModel(
     private val cardRepository: CardRepository
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(HomeUiState())
+    var uiState by mutableStateOf(DecksUiState())
         private set
 
     init {
-        loadHomeData()
+        loadDecks()
     }
 
-    fun loadHomeData() {
+    private fun loadDecks() {
         viewModelScope.launch {
-            val now = System.currentTimeMillis()
-            val dueCards = cardRepository.getDueCards(now)
-            val newCards = cardRepository.getNewCards(10) // Assuming daily limit of 10 for now
-            val lastDeck = cardRepository.getDecks().firstOrNull() // Just a placeholder for last used
-
+            val decks = cardRepository.getDecks()
             uiState = uiState.copy(
-                reviewsDue = dueCards.size,
-                newCardsAvailable = newCards.size,
-                lastUsedDeck = lastDeck
+                decks = decks,
+                isLoading = false
             )
         }
     }
@@ -40,8 +35,13 @@ class HomeViewModel(
         fun provideFactory(repository: CardRepository): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(repository) as T
+                return DecksViewModel(repository) as T
             }
         }
     }
 }
+
+data class DecksUiState(
+    val decks: List<Deck> = emptyList(),
+    val isLoading: Boolean = true
+)
