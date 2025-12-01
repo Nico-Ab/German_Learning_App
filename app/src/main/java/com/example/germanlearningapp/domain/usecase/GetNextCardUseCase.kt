@@ -7,29 +7,29 @@ class GetNextCardUseCase(
     private val cardRepository: CardRepository
 ) {
     suspend operator fun invoke(
+        deckId: Long,
         studyMode: StudyMode,
         newCardLimit: Int,
         newCardsStudiedToday: Int
     ): Card? {
         val now = System.currentTimeMillis()
         
-        // 1. Get due reviews
-        val dueCards = cardRepository.getDueCards(now)
+        // Get due cards
+        val dueCards = cardRepository.getDueCards(now, deckId)
         
-        // 2. Get new cards if allowed
+        // Get new cards if allowed
         val newCardsAllowed = newCardLimit - newCardsStudiedToday
         val newCards = if (newCardsAllowed > 0) {
-            cardRepository.getNewCards(newCardsAllowed)
+            cardRepository.getNewCards(newCardsAllowed, deckId)
         } else {
             emptyList()
         }
 
-        // 3. Decide based on mode
+        // Select card based on mode
         return when (studyMode) {
             StudyMode.REVIEW_ONLY -> dueCards.firstOrNull()
             StudyMode.NEW_THEN_REVIEW -> newCards.firstOrNull() ?: dueCards.firstOrNull()
             StudyMode.MIXED -> {
-                // Simple mix strategy: interleave or prioritize reviews slightly
                 if (dueCards.isNotEmpty()) dueCards.first()
                 else newCards.firstOrNull()
             }

@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.germanlearningapp.ui.theme.ThemeManager
 
 @Composable
 fun SettingsScreen(navController: NavHostController) {
@@ -41,7 +42,10 @@ fun SettingsScreen(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Dark Mode")
-            Switch(checked = false, onCheckedChange = { /* TODO */ })
+            Switch(
+                checked = ThemeManager.isDarkTheme,
+                onCheckedChange = { ThemeManager.toggleTheme() }
+            )
         }
     }
 }

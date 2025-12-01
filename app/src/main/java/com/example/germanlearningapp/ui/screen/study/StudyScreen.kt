@@ -11,11 +11,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.germanlearningapp.di.ServiceLocator
 import com.example.germanlearningapp.domain.model.Rating
+import com.example.germanlearningapp.domain.model.StudyMode
 import com.example.germanlearningapp.ui.navigation.Screen
 
 @Composable
 fun StudyScreen(
     deckId: Long,
+    mode: String = "MIXED", // Passed from navigation
     navController: NavHostController,
     viewModel: StudyViewModel = viewModel(factory = StudyViewModel.provideFactory(
         getNextCardUseCase = ServiceLocator.getNextCardUseCase,
@@ -24,8 +26,14 @@ fun StudyScreen(
 ) {
     val state = viewModel.uiState
 
-    LaunchedEffect(deckId) {
-        viewModel.loadNextCard(deckId)
+    // Load card when screen opens
+    LaunchedEffect(deckId, mode) {
+        val studyMode = try {
+            StudyMode.valueOf(mode)
+        } catch (e: IllegalArgumentException) {
+            StudyMode.MIXED
+        }
+        viewModel.loadNextCard(deckId, studyMode)
     }
 
     Column(
@@ -42,7 +50,7 @@ fun StudyScreen(
             TextButton(onClick = { navController.popBackStack() }) {
                 Text("Exit")
             }
-            Text("Study Mode") // Placeholder for progress
+            Text("Study Mode: $mode") 
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -62,35 +70,48 @@ fun StudyScreen(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Show "New" or "Review" label
+                    val label = if (state.isNewCard) "New" else "Review"
                     Text(
-                        text = state.currentCard.frontText,
-                        style = MaterialTheme.typography.displayMedium
+                        text = label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
                     )
-                    
-                    Spacer(modifier = Modifier.height(32.dp))
 
-                    if (state.isAnswerShown) {
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(32.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
-                            text = state.currentCard.backText,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            text = state.currentCard.frontText,
+                            style = MaterialTheme.typography.displayMedium
                         )
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        if (state.isAnswerShown) {
+                            HorizontalDivider()
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Text(
+                                text = state.currentCard.backText,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Controls
+            // Answer / Rate Controls
             if (!state.isAnswerShown) {
                 Button(
                     onClick = { viewModel.showAnswer() },

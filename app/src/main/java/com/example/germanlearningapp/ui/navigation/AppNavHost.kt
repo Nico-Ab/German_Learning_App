@@ -51,12 +51,15 @@ fun AppNavHost(
         composable(
             route = Screen.Study.route,
             arguments = listOf(
-                navArgument("deckId") { type = NavType.LongType }
+                navArgument("deckId") { type = NavType.LongType },
+                navArgument("mode") { type = NavType.StringType; defaultValue = "MIXED" }
             )
         ) { backStackEntry ->
             val deckId = backStackEntry.arguments?.getLong("deckId") ?: 0L
+            val mode = backStackEntry.arguments?.getString("mode") ?: "MIXED"
             StudyScreen(
                 deckId = deckId,
+                mode = mode,
                 navController = navController
             )
         }

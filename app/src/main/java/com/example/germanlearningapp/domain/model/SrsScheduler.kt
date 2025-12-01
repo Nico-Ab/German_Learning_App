@@ -7,20 +7,19 @@ object SrsScheduler {
     private const val MIN_EASE = 1.3
     private const val START_EASE = 2.5
 
+    // Calculate next review state
     fun calculateNextState(
         currentState: ReviewState?,
         rating: Rating,
         now: Long
     ): ReviewState {
         if (currentState == null) {
-            // New card being reviewed for the first time
             return calculateInitialReview(rating, now)
         }
-
-        // Existing review
         return calculateReview(currentState, rating, now)
     }
 
+    // Initial review
     private fun calculateInitialReview(rating: Rating, now: Long): ReviewState {
         val easeFactor = START_EASE
         val (intervalDays, repetitions) = when (rating) {
@@ -30,7 +29,7 @@ object SrsScheduler {
         }
 
         return ReviewState(
-            cardId = 0, // Will be set by caller or ignored if used for calculation only
+            cardId = 0,
             easeFactor = easeFactor,
             intervalDays = intervalDays,
             repetitions = repetitions,
@@ -40,6 +39,7 @@ object SrsScheduler {
         )
     }
 
+    // Subsequent review
     private fun calculateReview(current: ReviewState, rating: Rating, now: Long): ReviewState {
         if (rating == Rating.AGAIN) {
             return current.copy(
@@ -52,14 +52,13 @@ object SrsScheduler {
             )
         }
 
-        // Rating is GOOD or EASY
         var newEase = current.easeFactor + (0.1 - (5 - ratingScore(rating)) * (0.08 + (5 - ratingScore(rating)) * 0.02))
         if (newEase < MIN_EASE) newEase = MIN_EASE
 
         val newInterval = if (current.repetitions == 0) {
-            1 // First successful review after failure/new
+            1
         } else if (current.repetitions == 1) {
-            6 // Second review
+            6
         } else {
             (current.intervalDays * newEase).roundToInt()
         }
@@ -78,7 +77,7 @@ object SrsScheduler {
 
     private fun ratingScore(rating: Rating): Int {
         return when (rating) {
-            Rating.AGAIN -> 0 // Should not happen in this path
+            Rating.AGAIN -> 0 // Should not happen
             Rating.GOOD -> 4
             Rating.EASY -> 5
         }

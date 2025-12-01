@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.germanlearningapp.di.ServiceLocator
 import com.example.germanlearningapp.domain.model.Deck
+import com.example.germanlearningapp.domain.model.StudyMode
 import com.example.germanlearningapp.ui.navigation.Screen
 
 @Composable
@@ -41,7 +42,6 @@ fun DecksScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Group by Level
                 val grouped = state.decks.groupBy { it.level }
                 
                 grouped.keys.sorted().forEach { level ->
@@ -53,9 +53,18 @@ fun DecksScreen(
                         )
                     }
                     items(grouped[level] ?: emptyList()) { deck ->
-                        DeckItem(deck = deck) {
-                            navController.navigate(Screen.Study.createRoute(deck.id))
-                        }
+                        DeckItem(
+                            deck = deck,
+                            onStudy = { 
+                                navController.navigate(Screen.Study.createRoute(deck.id, "MIXED")) 
+                            },
+                            onReview = { 
+                                navController.navigate(Screen.Study.createRoute(deck.id, "REVIEW_ONLY")) 
+                            },
+                            onNew = { 
+                                navController.navigate(Screen.Study.createRoute(deck.id, "NEW_THEN_REVIEW")) 
+                            }
+                        )
                     }
                 }
             }
@@ -64,11 +73,16 @@ fun DecksScreen(
 }
 
 @Composable
-fun DeckItem(deck: Deck, onClick: () -> Unit) {
+fun DeckItem(
+    deck: Deck,
+    onStudy: () -> Unit,
+    onReview: () -> Unit,
+    onNew: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onStudy() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -95,6 +109,23 @@ fun DeckItem(deck: Deck, onClick: () -> Unit) {
                 text = deck.description,
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = onStudy, modifier = Modifier.weight(1f)) {
+                    Text("Study")
+                }
+                OutlinedButton(onClick = onReview, modifier = Modifier.weight(1f)) {
+                    Text("Review")
+                }
+                OutlinedButton(onClick = onNew, modifier = Modifier.weight(1f)) {
+                    Text("New")
+                }
+            }
         }
     }
 }

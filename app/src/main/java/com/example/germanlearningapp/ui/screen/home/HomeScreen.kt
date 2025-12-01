@@ -3,6 +3,7 @@ package com.example.germanlearningapp.ui.screen.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,6 +20,11 @@ fun HomeScreen(
     ))
 ) {
     val state = viewModel.uiState
+
+    // Reload data whenever the screen is displayed
+    LaunchedEffect(Unit) {
+        viewModel.loadHomeData()
+    }
 
     Column(
         modifier = Modifier

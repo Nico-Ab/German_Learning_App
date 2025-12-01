@@ -26,15 +26,22 @@ class CardRepositoryImpl(
         return cardDao.getCardsByDeck(deckId).map { it.toDomain() }
     }
 
-    override suspend fun getDueCards(now: Long): List<Card> {
+    override suspend fun getDueCards(now: Long, deckId: Long): List<Card> {
         val dueReviews = reviewStateDao.getDue(now)
         if (dueReviews.isEmpty()) return emptyList()
         val cardIds = dueReviews.map { it.cardId }
-        return cardDao.getCardsByIds(cardIds).map { it.toDomain() }
+        // Ideally use specific DAO query
+        return cardDao.getCardsByIds(cardIds)
+            .filter { it.deckId == deckId }
+            .map { it.toDomain() }
     }
 
-    override suspend fun getNewCards(limit: Int): List<Card> {
-        return cardDao.getNewCards(limit).map { it.toDomain() }
+    override suspend fun getNewCards(limit: Int, deckId: Long): List<Card> {
+        // Fetch extra to allow filtering
+        return cardDao.getNewCards(limit * 2)
+            .filter { it.deckId == deckId }
+            .take(limit)
+            .map { it.toDomain() }
     }
 
     override suspend fun saveReviewState(state: ReviewState) {

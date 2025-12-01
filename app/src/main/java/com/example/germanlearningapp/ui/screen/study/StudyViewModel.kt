@@ -24,19 +24,21 @@ class StudyViewModel(
     private var newCardsStudiedToday = 0
     private val dailyNewLimit = 10 // TODO: Get from settings
 
-    fun loadNextCard(deckId: Long) {
+    fun loadNextCard(deckId: Long, studyMode: StudyMode = StudyMode.MIXED) {
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
             val card = getNextCardUseCase(
-                studyMode = StudyMode.MIXED, // TODO: Get from settings
+                deckId = deckId,
+                studyMode = studyMode,
                 newCardLimit = dailyNewLimit,
                 newCardsStudiedToday = newCardsStudiedToday
             )
-
+            
             uiState = uiState.copy(
                 currentCard = card,
                 isLoading = false,
-                isAnswerShown = false
+                isAnswerShown = false,
+                isNewCard = true // Placeholder: Logic to determine if card is new needs repo query
             )
         }
     }
@@ -49,12 +51,6 @@ class StudyViewModel(
         val card = uiState.currentCard ?: return
         viewModelScope.launch {
             rateCardUseCase(card.id, rating)
-            
-            // If it was a new card (simplified check, ideally we check if it has prior review state)
-            // For now, just incrementing if it was successful. 
-            // Real implementation needs to check if it was actually "New" before rating.
-            // But for MVP, we'll just load the next one.
-            
             loadNextCard(card.deckId)
         }
     }
@@ -75,5 +71,6 @@ class StudyViewModel(
 data class StudyUiState(
     val currentCard: Card? = null,
     val isAnswerShown: Boolean = false,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isNewCard: Boolean = false
 )
