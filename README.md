@@ -1,5 +1,5 @@
-markdown
-# German Learning AppThis project is an Android application designed to help users learn German vocabulary and grammar efficiently using a Spaced Repetition System (SRS).
+# German Learning App
+This project is an Android application designed to help users learn German vocabulary and grammar efficiently using a Spaced Repetition System (SRS).
 
 ## Aim of the Project
 The core goal is to create a clean, intuitive mobile app that leverages cognitive science principles to optimize memory retention. Instead of just showing cards, the app schedules reviews at the perfect time, just before you're likely to forget, making learning faster and more effective.
