@@ -10,6 +10,6 @@ The app is currently in an early development stage. The UI , navigation, and cor
 This allows the UI and study flow to be tested without needing a  real database.
 
 ## Technical Report
-For a deep dive into the technical architecture, design decisions, and algorithms used in this project, you can review the full scientific report.
+For a deep dive into the technical architecture, design decisions, and algorithms used in this project, you can review the current state of the scientific report.
 
 [**Download the Technical Report (PDF)**](./app/App.pdf?download=true)
