@@ -30,7 +30,6 @@ class CardRepositoryImpl(
         val dueReviews = reviewStateDao.getDue(now)
         if (dueReviews.isEmpty()) return emptyList()
         val cardIds = dueReviews.map { it.cardId }
-        // Ideally use specific DAO query
         return cardDao.getCardsByIds(cardIds)
             .filter { it.deckId == deckId }
             .map { it.toDomain() }
@@ -53,22 +52,18 @@ class CardRepositoryImpl(
         name = name,
         description = description,
         level = level,
-        isPro = isPro
+        isPro = false // Defaulting to false as it was removed from entity
     )
 
     private fun CardEntity.toDomain(): Card {
         return Card(
             id = id,
             deckId = deckId,
-            type = try {
-                CardType.valueOf(type)
-            } catch (e: IllegalArgumentException) {
-                CardType.VOCAB // Fallback or handle error
-            },
+            type = CardType.VOCAB, // Defaulting to VOCAB as type was removed from entity
             frontText = frontText,
             backText = backText,
-            extraData = extraData,
-            isActive = isActive
+            extraData = null, // Defaulting to null as removed
+            isActive = true // Defaulting to true as removed
         )
     }
 

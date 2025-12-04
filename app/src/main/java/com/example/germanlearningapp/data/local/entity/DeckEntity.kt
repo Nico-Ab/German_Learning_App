@@ -8,6 +8,5 @@ data class DeckEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val description: String,
-    val level: Int,
-    val isPro: Boolean
+    val level: Int
 )

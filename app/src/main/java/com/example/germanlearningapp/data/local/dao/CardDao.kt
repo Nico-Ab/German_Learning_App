@@ -8,7 +8,7 @@ import com.example.germanlearningapp.data.local.entity.CardEntity
 
 @Dao
 interface CardDao {
-    @Query("SELECT * FROM cards WHERE deckId = :deckId AND isActive = 1")
+    @Query("SELECT * FROM cards WHERE deckId = :deckId")
     suspend fun getCardsByDeck(deckId: Long): List<CardEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -17,6 +17,6 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE id IN (:ids)")
     suspend fun getCardsByIds(ids: List<Long>): List<CardEntity>
 
-    @Query("SELECT * FROM cards WHERE id NOT IN (SELECT cardId FROM review_states) AND isActive = 1 LIMIT :limit")
+    @Query("SELECT * FROM cards WHERE id NOT IN (SELECT cardId FROM review_states) LIMIT :limit")
     suspend fun getNewCards(limit: Int): List<CardEntity>
 }

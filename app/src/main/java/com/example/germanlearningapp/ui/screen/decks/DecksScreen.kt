@@ -13,14 +13,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.germanlearningapp.di.ServiceLocator
 import com.example.germanlearningapp.domain.model.Deck
-import com.example.germanlearningapp.domain.model.StudyMode
 import com.example.germanlearningapp.ui.navigation.Screen
 
 @Composable
 fun DecksScreen(
     navController: NavHostController,
     viewModel: DecksViewModel = viewModel(factory = DecksViewModel.provideFactory(
-        ServiceLocator.cardRepository
+        ServiceLocator.cardRepository!!
     ))
 ) {
     val state = viewModel.uiState

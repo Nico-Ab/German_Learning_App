@@ -16,7 +16,7 @@ import com.example.germanlearningapp.ui.navigation.Screen
 fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(
-        ServiceLocator.cardRepository
+        ServiceLocator.cardRepository!!
     ))
 ) {
     val state = viewModel.uiState
