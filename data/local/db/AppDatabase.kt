@@ -13,7 +13,7 @@ import com.example.germanlearningapp.data.local.entity.ReviewStateEntity
 
 @Database(
     entities = [DeckEntity::class, CardEntity::class, ReviewStateEntity::class],
-    version = 6, 
+    version = 5, // Increment version to wipe old duplicate data
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -32,7 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "german_learning_app_db"
                 )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration() // Wipe DB on version change
                 .build()
                 INSTANCE = instance
                 instance

@@ -24,16 +24,12 @@ class HomeViewModel(
 
     fun loadHomeData() {
         viewModelScope.launch {
-            // Simulate refresh delay to ensure we fetch fresh data if coming back from another screen
-            delay(50) // Optional but helpful in non-reactive flows without flows
+            // Ensure data exists
+            cardRepository.ensureDataSeeded()
+            
+            delay(50) 
             
             val now = System.currentTimeMillis()
-            // We should ideally aggregate stats across ALL decks or fetch for a specific one.
-            // For now, let's sum up for all decks to show global stats, or pick the last used.
-            
-            // To make numbers match "clicked through all cards", we need to query the repo again.
-            // The FakeRepo tracks reviewedCardIds.
-            // If we iterate all decks:
             
             val decks = cardRepository.getDecks()
             var totalDue = 0
@@ -41,24 +37,37 @@ class HomeViewModel(
             
             decks.forEach { deck ->
                 val due = cardRepository.getDueCards(now, deck.id)
-                // Logic in FakeRepo splits cards into Due (first 5) and New (rest).
-                // If we review them, they disappear from both lists in FakeRepo.
+                val new = cardRepository.getNewCards(100, deck.id)
                 
                 totalDue += due.size
-                
-                // Note: FakeRepo's getNewCards drops 5. If less than 5 remain total, it returns empty.
-                val new = cardRepository.getNewCards(100, deck.id) 
                 totalNew += new.size
             }
+            
+            // Refined selection:
+            // First deck with Due cards
+            val deckWithDue = decks.firstOrNull { 
+                cardRepository.getDueCards(now, it.id).isNotEmpty() 
+            }
+            
+            // Or first deck with New cards
+            val deckWithNew = decks.firstOrNull {
+                cardRepository.getNewCards(1, it.id).isNotEmpty()
+            }
 
-            // Update Last Deck logic
-            val lastDeck = decks.firstOrNull() // Placeholder
+            val targetDeck = deckWithDue ?: deckWithNew ?: decks.firstOrNull()
 
             uiState = uiState.copy(
                 reviewsDue = totalDue,
                 newCardsAvailable = totalNew,
-                lastUsedDeck = lastDeck
+                lastUsedDeck = targetDeck
             )
+        }
+    }
+
+    fun resetDueDates() {
+        viewModelScope.launch {
+            cardRepository.resetAllDueDates()
+            loadHomeData() 
         }
     }
 

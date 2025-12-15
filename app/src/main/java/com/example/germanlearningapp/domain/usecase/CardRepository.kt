@@ -10,4 +10,7 @@ interface CardRepository {
     suspend fun getDueCards(now: Long, deckId: Long): List<Card>
     suspend fun getNewCards(limit: Int, deckId: Long): List<Card>
     suspend fun saveReviewState(state: ReviewState)
+    suspend fun getReviewState(cardId: Long): ReviewState?
+    suspend fun resetAllDueDates()
+    suspend fun ensureDataSeeded() // New method to guarantee data existence
 }

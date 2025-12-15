@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -17,23 +18,24 @@ import com.example.germanlearningapp.ui.navigation.Screen
 @Composable
 fun StudyScreen(
     deckId: Long,
-    mode: String = "MIXED", // Passed from navigation
+    mode: String = "MIXED", 
     navController: NavHostController,
     viewModel: StudyViewModel = viewModel(factory = StudyViewModel.provideFactory(
+        cardRepository = ServiceLocator.cardRepository!!,
         getNextCardUseCase = ServiceLocator.getNextCardUseCase,
         rateCardUseCase = ServiceLocator.rateCardUseCase
     ))
 ) {
     val state = viewModel.uiState
 
-    // Load card when screen opens
     LaunchedEffect(deckId, mode) {
         val studyMode = try {
             StudyMode.valueOf(mode)
         } catch (e: IllegalArgumentException) {
             StudyMode.MIXED
         }
-        viewModel.loadNextCard(deckId, studyMode)
+        // Updated to use startSession
+        viewModel.startSession(deckId, studyMode)
     }
 
     Column(
@@ -42,7 +44,6 @@ fun StudyScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top Bar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -50,7 +51,7 @@ fun StudyScreen(
             TextButton(onClick = { navController.popBackStack() }) {
                 Text("Exit")
             }
-            Text("Study Mode: $mode") 
+            Text("Study Mode: $mode", style = MaterialTheme.typography.bodyMedium) 
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -64,45 +65,48 @@ fun StudyScreen(
                 Text("Return to Home")
             }
         } else {
-            // Card Content
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Show "New" or "Review" label
+                    // Top Right Indicator (New/Review)
                     val label = if (state.isNewCard) "New" else "Review"
                     Text(
                         text = label,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(16.dp)
                     )
 
+                    // Main Content Column
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(24.dp),
+                            .padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        // Front Text always visible
                         Text(
                             text = state.currentCard.frontText,
-                            style = MaterialTheme.typography.displayMedium
+                            style = MaterialTheme.typography.displayLarge,
+                            textAlign = TextAlign.Center
                         )
-                        
-                        Spacer(modifier = Modifier.height(32.dp))
 
+                        // Back Text only if answer shown
                         if (state.isAnswerShown) {
+                            Spacer(modifier = Modifier.height(32.dp))
                             HorizontalDivider()
                             Spacer(modifier = Modifier.height(32.dp))
                             Text(
                                 text = state.currentCard.backText,
                                 style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -111,7 +115,6 @@ fun StudyScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Answer / Rate Controls
             if (!state.isAnswerShown) {
                 Button(
                     onClick = { viewModel.showAnswer() },
@@ -122,28 +125,32 @@ fun StudyScreen(
             } else {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Button(
-                        onClick = { viewModel.rateCard(Rating.AGAIN) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Again")
-                    }
-                    Button(
-                        onClick = { viewModel.rateCard(Rating.GOOD) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("Good")
-                    }
-                    Button(
-                        onClick = { viewModel.rateCard(Rating.EASY) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-                    ) {
-                        Text("Easy")
-                    }
+                    RatingButton(rating = Rating.AGAIN, time = state.nextReviewTimes[Rating.AGAIN] ?: "", onClick = { viewModel.rateCard(Rating.AGAIN) })
+                    RatingButton(rating = Rating.GOOD, time = state.nextReviewTimes[Rating.GOOD] ?: "", onClick = { viewModel.rateCard(Rating.GOOD) })
+                    RatingButton(rating = Rating.EASY, time = state.nextReviewTimes[Rating.EASY] ?: "", onClick = { viewModel.rateCard(Rating.EASY) })
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RatingButton(rating: Rating, time: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = when (rating) {
+                Rating.AGAIN -> MaterialTheme.colorScheme.error
+                Rating.GOOD -> MaterialTheme.colorScheme.primary
+                Rating.EASY -> MaterialTheme.colorScheme.tertiary
+            }
+        )
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = rating.name.lowercase().replaceFirstChar { it.titlecase() })
+            Text(text = time, style = MaterialTheme.typography.labelSmall)
         }
     }
 }

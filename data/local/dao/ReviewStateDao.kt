@@ -17,7 +17,6 @@ interface ReviewStateDao {
     @Query("SELECT * FROM review_states WHERE dueDate <= :now")
     suspend fun getDue(now: Long): List<ReviewStateEntity>
 
-    // Debug: Reset all due dates
     @Query("UPDATE review_states SET dueDate = 0")
-    suspend fun resetAllDueDates(): Int
+    suspend fun resetAllDueDates()
 }

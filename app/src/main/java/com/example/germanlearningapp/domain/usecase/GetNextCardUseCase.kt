@@ -28,6 +28,7 @@ class GetNextCardUseCase(
         // Select card based on mode
         return when (studyMode) {
             StudyMode.REVIEW_ONLY -> dueCards.firstOrNull()
+            StudyMode.NEW_ONLY -> newCards.firstOrNull()
             StudyMode.NEW_THEN_REVIEW -> newCards.firstOrNull() ?: dueCards.firstOrNull()
             StudyMode.MIXED -> {
                 if (dueCards.isNotEmpty()) dueCards.first()

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.germanlearningapp.di.ServiceLocator
 import com.example.germanlearningapp.ui.navigation.Screen
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -20,6 +22,7 @@ fun HomeScreen(
     ))
 ) {
     val state = viewModel.uiState
+    val scope = rememberCoroutineScope()
 
     // Reload data whenever the screen is displayed
     LaunchedEffect(Unit) {
@@ -81,6 +84,21 @@ fun HomeScreen(
         }
         
         Spacer(modifier = Modifier.weight(1f))
+        
+        // Debug Button
+        Button(
+            onClick = { 
+                scope.launch {
+                    viewModel.resetDueDates()
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("DEBUG: Reset All Due Dates")
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
         
         Button(
             onClick = { navController.navigate(Screen.Pro.route) },

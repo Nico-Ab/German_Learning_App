@@ -10,9 +10,10 @@ import com.example.germanlearningapp.domain.usecase.RateCardUseCase
 object ServiceLocator {
 
     private var database: AppDatabase? = null
+    
     @Volatile
     var cardRepository: CardRepository? = null
-        private set // Keep the setter private
+        private set
 
     fun provideCardRepository(context: Context): CardRepository {
         synchronized(this) {

@@ -61,7 +61,7 @@ fun DecksScreen(
                                 navController.navigate(Screen.Study.createRoute(deck.id, "REVIEW_ONLY")) 
                             },
                             onNew = { 
-                                navController.navigate(Screen.Study.createRoute(deck.id, "NEW_THEN_REVIEW")) 
+                                navController.navigate(Screen.Study.createRoute(deck.id, "NEW_ONLY")) 
                             }
                         )
                     }
@@ -95,13 +95,6 @@ fun DeckItem(
                     text = deck.name,
                     style = MaterialTheme.typography.titleLarge
                 )
-                if (deck.isPro) {
-                    Text(
-                        text = "PRO",
-                        color = MaterialTheme.colorScheme.tertiary,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -110,7 +103,6 @@ fun DeckItem(
             )
             Spacer(modifier = Modifier.height(12.dp))
             
-            // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
