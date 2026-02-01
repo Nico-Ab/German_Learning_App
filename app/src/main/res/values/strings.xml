@@ -1,3 +1,45 @@
 <resources>
-    <string name="app_name">German Learning App</string>
+    <string name="app_name">German App</string>
+    <string name="decks_title">My Decks</string>
+    <string name="loading">Loading...</string>
+    <string name="no_decks">No decks available. Please restart to seed.</string>
+    <string name="study_deck_title">Studying: %s</string>
+    <string name="back">Back</string>
+    <string name="show_answer">Show Answer</string>
+    <string name="rate_card">Rate your recall</string>
+    <string name="again">Again</string>
+    <string name="hard">Hard</string>
+    <string name="good">Good</string>
+    <string name="easy">Easy</string>
+    <string name="study_complete_title">Session Complete!</string>
+    <string name="study_complete_message">You have reviewed all due cards for this deck.</string>
+    <string name="back_to_decks">Back to Decks</string>
+    
+    <!-- Settings / Drawer -->
+    <string name="settings_title">Settings</string>
+    <string name="enable_tts">Enable TTS</string>
+    <string name="theme_title">Theme</string>
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_coming_soon">Statistics coming soon!</string>
+    
+    <!-- Deck Settings -->
+    <string name="deck_settings_title">Deck Settings: %s</string>
+    <string name="new_cards_per_day">New cards per day: %d</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Statistics -->
+    <string name="total_reviews">Total Reviews</string>
+    <string name="studied_today">Studied Today</string>
+    <string name="current_streak">Current Streak</string>
+    <string name="streak_days">%d days</string>
+    <string name="weekly_activity">Weekly Activity</string>
+    
+    <!-- Global Stats -->
+    <string name="reviews_due_label">Reviews Due</string>
+    <string name="new_cards_label">New Cards</string>
+    
+    <!-- Debug -->
+    <string name="debug_reset_cards">Reset All Cards (Debug)</string>
+    <string name="menu_content_description">Menu</string>
 </resources>
