@@ -59,4 +59,4 @@ It’s not meant to be over-engineered, but it keeps things readable while featu
 ## Technical report
 There’s a short technical report included that explains the architecture and the SRS logic:
 
-`./app/App.pdf`
+[**Download the Technical Report (PDF)**](./app/App.pdf?download=true)
